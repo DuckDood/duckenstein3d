@@ -1,0 +1,14 @@
+cdir obj/
+cdir build/
+adddir obj/
+adddir build/
+
+dep GL
+dep SDL2
+dep m
+
+include main.c
+
+linker gcc
+
+build output
