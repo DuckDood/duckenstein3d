@@ -10,11 +10,6 @@
 #define res 10
 #endif
 
-
-#ifndef debug
-#define debug 0
-#endif
-
 #define SH WIN_HEIGHT
 #define SW WIN_WIDTH
 
@@ -45,7 +40,7 @@ void pixel(int x, int y, int c, uint8_t *pixels) {
 	}
 
 	switch(c) {
-	cae 0:
+	case 0:
 	pixels[(y*WIN_WIDTH + x) * 4+0] = 255; pixels[(y*WIN_WIDTH + x) * 4+1] = 255; pixels[(y*WIN_WIDTH + x) * 4+2] = 0; pixels[(y*WIN_WIDTH + x) * 4+3] = 255; // yellow
 	break;
 	case 1:
@@ -86,11 +81,13 @@ void clearBackground()
 */
 
 bool sqrcol(float x, float y, SDL_Rect rect) {
-	if(x > rect.x && x < rect.x + rect.w /* X's done*/ && y > rect.y && y <rect.y+rect.h) {
+/*	if(x > rect.x && x < rect.x + rect.w  && y > rect.y && y <rect.y+rect.h) {
 		return true;
 		// i know i can just return the boolean ^^ this is for debugging remind me to reyurn boolean
 	}
 	return false;
+	*/
+	return x > rect.x && x < rect.x + rect.w  && y > rect.y && y <rect.y+rect.h;
 }
 
 int main(int argc, char **argv) {
@@ -132,7 +129,10 @@ int main(int argc, char **argv) {
     // main loop
     bool should_quit = false;
 	int lastX = x, lastY = y;
+		int amnt = 0;
+		SDL_Rect *rList = malloc(sizeof(SDL_Rect)*amnt);
     SDL_Event e;
+	bool mousePrevDown = false;
     while (!should_quit) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
@@ -231,115 +231,43 @@ int main(int argc, char **argv) {
 		float fra = a-50*0.01; // fr fr nocap a
 		//SDL_Rect r = {500, 500, 50, 50};
 		//SDL_Rect re = {800, 200, 120, 120};
-		/*SDL_Rect rL[] = {
-			{500, 500, 50, 50},
-			{800, 200, 120, 120}
-		};*/
-SDL_Rect rL[8] = {
- {138,0,92,598},
-{342,387,67,380},
-{209,0,500,180},
-{393,697,419,70},
-{589,154,116,415},
-{857,148,364,40},
-{990,176,72,320},
-{806,685,559,82},
-};
-
-int color[8][8] = {
-	{255, 0, 0},
-	{255, 0, 0},
-	{255, 0, 0},
-	{255, 0, 0},
-	{255, 0, 0},
-	{0, 255, 255},
-	{0, 255, 255},
-	{255, 0, 0},
-};
-
-/*
-SDL_Rect rL[1] = {
- {423,315,474,198},
-};*/
-
-
-		for(int i = 0; i<300; i++) {
-		tamnt = tamntc - 300*0.01/3;
-		//float dist = sqrt(pow(768,2) + pow(1366,2));
-		float dist = 768;
-		bool col = false;
-		int cIndex;
+		SDL_Rect ui1 = {0,0,20,5};
+		int curX, curY;
+		int cornerX, cornerY;
+		SDL_Rect tmpRect = {0, 0, 0, 0};
 		
-		for(; ; tamnt+=res) {
-			for(int i = 0; i<sizeof(rL)/sizeof(SDL_Rect); i++)
-			{
-				if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])) {
-					col = true;
-					cIndex = i;
-					break;
-					
-				}
-			}
-			//if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, r) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, re)/* || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, top) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, bottom)*/) {
-			if(col/* || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, top) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, bottom)*/) {
-				col = false;
-				if(tamnt<1) {
-					x=lastX;
-					y=lastY;
-				}
-				SDL_Rect rect = {i*5, (768-(dist-tamnt))/2, 5, fmax(dist-tamnt, 0)};
-				//SDL_SetRenderDrawColor(renderer, ((float)tamnt/(float)255)*255, 0, 0, 255);
-				//SDL_SetRenderDrawColor(renderer, fmin(dist(x, y, x+sin(fra)*tamnt, 255), y+cos(fra)*tamnt  ) , 0, 0, 255);
-				
-
-				
-
-				//SDL_SetRenderDrawColor(renderer, fmax(255*fmin(1-(float)tamnt/768, 255), 0), 0, 0, 255);
-				SDL_SetRenderDrawColor(renderer, fmax( color[cIndex][0] *fmin(1-(float)tamnt/768, 255), 0), fmax( color[cIndex][1]  *fmin(1-(float)tamnt/768, 255), 0), fmax(  color[cIndex][2]  *fmin(1-(float)tamnt/768, 255), 0), 255);
-
-
-				//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-				
-
-				//SDL_SetRenderDrawColor(renderer, fmax(fmin(768-tamnt, 255), 0), 0, 0, 255);
-				//SDL_SetRenderDrawColor(renderer, fmax(fmin(768-tamnt, 255), 0), 0, 0, 255);
-				SDL_RenderFillRect(renderer, &rect);
-				break;
-			}
-
-			if(x + sin(fra)*tamnt > 1366 || x + sin(fra)*tamnt < 0 || y + cos(fra)*tamnt > 768 || y + cos(fra)*tamnt < 0) {
-				if(tamnt==-1) {
-					x=lastX;
-					y=lastY;
-				}
-				//tamnt-=1;
-				//SDL_Rect rect = {i, 0, 1, 768-tamnt};
-				SDL_Rect rect = {i*5, (768-(dist-tamnt))/2, 5, fmax(dist-tamnt, 0)};
-				SDL_SetRenderDrawColor(renderer, fmax(255*fmin(1-(float)tamnt/768, 255), 0), 0, 0, 255);
-				
-				//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-				//SDL_RenderFillRect(renderer, &rect);
-				SDL_RenderFillRect(renderer, &rect);
-				//tamnt;
-				break;
-			}
-		}
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-		#if debug == 1
-		SDL_RenderDrawLine(renderer, x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt);
-		#endif
-		fra+=0.01/3;
-
+		
+		if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1 && !mousePrevDown) {
+			cornerX = curX;
+			cornerY = curY;
+			mousePrevDown = true;
+			
+		} else if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1 ) {
+			tmpRect = (SDL_Rect){cornerX, cornerY, curX-cornerX, curY-cornerY};
+			if(curX-cornerX > 0 &&
+			curY-cornerY > 0)  {
+			SDL_RenderDrawRect(renderer, &tmpRect);
+			}
 		}
+		else if(mousePrevDown){
+			mousePrevDown = false;
+			rList = realloc(rList, (1+amnt)*sizeof(SDL_Rect));
+			if(curX-cornerX > 0 &&
+			curY-cornerY > 0)  {
+			rList[amnt] = (SDL_Rect){cornerX, cornerY, curX-cornerX, curY-cornerY};
+			amnt++;
+			}
+		}
+		for(int i = 0; i<amnt; i++) {
+			SDL_RenderDrawRect(renderer, &rList[i]);
+		}
+
+		//SDL_RenderDrawLine(renderer, x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt);
+
         //SDL_RenderCopy(renderer, texture, NULL, NULL);
 		
 		//SDL_RenderDrawRect(renderer, &r);
-		
-	#if debug == 1
-		for(int i = 0; i<sizeof(rL)/sizeof(SDL_Rect); i++) {
-			SDL_RenderDrawRect(renderer, &rL[i]);
-		}
-	#endif
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderPresent(renderer);
@@ -349,6 +277,13 @@ SDL_Rect rL[1] = {
     //SDL_DestroyWindow(window);
     //SDL_Quit();
 	// these are causing free() invalid pointer for some reason
+	printf("SDL_Rect rL[%d] = {\n ", amnt);
+	for(int i = 0; i<amnt; i++) {
+		SDL_Rect cR = rList[i];
+		printf("{%d,%d,%d,%d},\n", cR.x, cR.y, cR.w, cR.h);
+	}
+	printf("}");
+	
 
     return 0;
 }

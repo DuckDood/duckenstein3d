@@ -7,8 +7,21 @@ dep GL
 dep SDL2
 dep m
 
+var res 10
+var debug 0
+
+
+bopt res res
+bopt debug debug
+
 include main.c
 
 linker gcc
 
-build output
+build 3d
+
+rmbuild main.c
+
+include builder.c
+
+build builder
