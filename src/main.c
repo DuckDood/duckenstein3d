@@ -21,6 +21,50 @@
 
 
 
+// https://discourse.libsdl.org/t/query-how-do-you-draw-a-circle-in-sdl2-sdl2/33379
+    void DrawCircle(SDL_Renderer* renderer, int32_t centreX, int32_t centreY, int32_t radius)
+    {
+    const int32_t diameter = (radius * 2);
+
+    int32_t x = (radius - 1);
+    int32_t y = 0;
+    int32_t tx = 1;
+    int32_t ty = 1;
+    int32_t error = (tx - diameter);
+
+    while (x >= y)
+    {
+    // Each of the following renders an octant of the circle
+    SDL_RenderDrawPoint(renderer, centreX + x, centreY - y);
+    SDL_RenderDrawPoint(renderer, centreX + x, centreY + y);
+    SDL_RenderDrawPoint(renderer, centreX - x, centreY - y);
+    SDL_RenderDrawPoint(renderer, centreX - x, centreY + y);
+    SDL_RenderDrawPoint(renderer, centreX + y, centreY - x);
+    SDL_RenderDrawPoint(renderer, centreX + y, centreY + x);
+    SDL_RenderDrawPoint(renderer, centreX - y, centreY - x);
+    SDL_RenderDrawPoint(renderer, centreX - y, centreY + x);
+
+      if (error <= 0)
+      {
+      	++y;
+      	error += ty;
+      	ty += 2;
+      }
+
+      if (error > 0)
+      {
+      	--x;
+      	tx += 2;
+      	error += (tx - diameter);
+      }
+
+    }
+    }
+
+
+
+
+
 bool keys[7] = {false, false, false ,false, false, false, false};
 
 enum Keys {
@@ -85,16 +129,24 @@ void clearBackground()
 
 */
 
+typedef struct circle {
+	float x;
+	float y;
+	float r;
+} circle;
+
 bool sqrcol(float x, float y, SDL_Rect rect) {
-	if(x > rect.x && x < rect.x + rect.w /* X's done*/ && y > rect.y && y <rect.y+rect.h) {
+/*	if(x > rect.x && x < rect.x + rect.w  && y > rect.y && y <rect.y+rect.h) {
 		return true;
 		// i know i can just return the boolean ^^ this is for debugging remind me to reyurn boolean
 	}
 	return false;
+	*/
+	return x > rect.x && x < rect.x + rect.w  && y > rect.y && y <rect.y+rect.h;
 }
 
-bool circol(float x, float y, float cX, float cY, float rad) {
-	if(dist(x, y, cX, cY) < rad) {
+bool circol(float x, float y, circle c) {
+	if(dist(x, y, c.x, c.y) < c.r) {
 		return true;
 		// i know i can just return the boolean ^^ this is for debugging remind me to reyurn boolean
 	}
@@ -243,6 +295,7 @@ int main(int argc, char **argv) {
 			{500, 500, 50, 50},
 			{800, 200, 120, 120}
 		};*/
+		/*
 SDL_Rect rL[8] = {
  {138,0,92,598},
 {342,387,67,380},
@@ -252,6 +305,11 @@ SDL_Rect rL[8] = {
 {857,148,364,40},
 {990,176,72,320},
 {806,685,559,82},
+};
+*//*
+SDL_Rect rL[2] = {
+ {263,167,1,480},
+{264,168,297,2},
 };
 
 int color[8][8] = {
@@ -263,7 +321,78 @@ int color[8][8] = {
 	{0, 255, 255},
 	{0, 255, 255},
 	{255, 0, 0},
+};*/
+/*
+
+SDL_Rect rL[9] = {
+ {160,0,106,532},
+{434,365,118,402},
+{243,0,518,145},
+{718,102,62,475},
+{515,663,265,104},
+{773,672,361,95},
+{774,642,28,40},
+{1000,264,107,255},
+{911,207,296,106},
 };
+
+int color[9][3] = {
+{255,0,0},
+{255,0,0},
+{255,0,0},
+{255,0,0},
+{255,0,0},
+{255,0,0},
+{255,0,0},
+{0,200,198},
+{0,200,198},
+};*/
+
+
+SDL_Rect rL[12] = {
+{251,231,104,103},
+{351,232,118,102},
+{459,232,103,102},
+{556,234,127,100},
+{670,231,113,103},
+{766,233,101,101},
+{857,234,105,100},
+{927,234,107,100},
+{1009,235,105,99},
+{1112,229,94,105},
+{1181,231,87,103},
+{156,232,98,102},
+};
+
+int color[12][3] = {
+{255,0,0},
+{255,255,0},
+{1,255,0},
+{1,255,255},
+{1,8,255},
+{255,0,255},
+{255,0,3},
+{255,255,3},
+{0,255,3},
+{0,255,255},
+{0,0,255},
+{255,0,255},
+};
+
+
+
+
+circle cL[] = {
+	{600, 500, 50},
+	{400, 500, 50}
+};
+
+int ccolor[][3] = {
+	{255, 255, 0},
+	{0, 255, 255}
+};
+
+bool circ = false;
 
 /*
 SDL_Rect rL[1] = {
@@ -275,18 +404,20 @@ SDL_Rect rL[1] = {
 		tamnt = tamntc - 300*0.01/3;
 		//float dist = sqrt(pow(768,2) + pow(1366,2));
 		float dist = 768;
+		//float dist = 1366;
 		bool col = false;
 		int cIndex;
 		
 		for(; ; tamnt+=res) {
+			if(tamnt > dist) break;
 			for(int i = 0; i<sizeof(rL)/sizeof(SDL_Rect); i++)
 			{
-				if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, 500, 500, 60)*/) {
+				if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, c)*/) {
 					col = true;
 					cIndex = i;
 					// steps back after collisions (nearly same result as increasing res, except corners are slightly rounded)
 					// circol works but i am too lazy too put them somewhere (i need to put it in the builder)
-					for(;sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, 500, 500, 20)*/;) {
+					for(;sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, c)*/;) {
 						tamnt--;
 
 					}
@@ -294,6 +425,24 @@ SDL_Rect rL[1] = {
 					
 				}
 			}
+
+			for(int i = 0; i<sizeof(cL)/sizeof(circle); i++)
+			{
+				if(/*sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i]) || */circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, cL[i])) {
+					col = true;
+					circ = true;
+					cIndex = i;
+					// steps back after collisions (nearly same result as increasing res, except corners are slightly rounded)
+					// circol works but i am too lazy too put them somewhere (i need to put it in the builder)
+					for(;/*sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i]) || */circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, cL[i]);) {
+						tamnt--;
+
+					}
+					break;
+					
+				}
+			}
+
 			//if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, r) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, re)/* || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, top) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, bottom)*/) {
 			if(col/* || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, top) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, bottom)*/) {
 				col = false;
@@ -301,7 +450,7 @@ SDL_Rect rL[1] = {
 					x=lastX;
 					y=lastY;
 				}
-				SDL_Rect rect = {i*5, (768-(dist-tamnt))/2, 5, fmax(dist-tamnt, 0)};
+				SDL_Rect rect = {i*4.5-5, (768-(dist-tamnt))/2, 5, fmax(dist-tamnt, 0)};
 				//SDL_SetRenderDrawColor(renderer, ((float)tamnt/(float)255)*255, 0, 0, 255);
 				//SDL_SetRenderDrawColor(renderer, fmin(dist(x, y, x+sin(fra)*tamnt, 255), y+cos(fra)*tamnt  ) , 0, 0, 255);
 				
@@ -309,8 +458,12 @@ SDL_Rect rL[1] = {
 				
 
 				//SDL_SetRenderDrawColor(renderer, fmax(255*fmin(1-(float)tamnt/768, 255), 0), 0, 0, 255);
+				if(circ) {
+				circ = false;
+				SDL_SetRenderDrawColor(renderer, fmax( ccolor[cIndex][0] *fmin(1-(float)tamnt/768, 255), 0), fmax( ccolor[cIndex][1]  *fmin(1-(float)tamnt/768, 255), 0), fmax(  ccolor[cIndex][2]  *fmin(1-(float)tamnt/768, 255), 0), 255);
+				} else {
 				SDL_SetRenderDrawColor(renderer, fmax( color[cIndex][0] *fmin(1-(float)tamnt/768, 255), 0), fmax( color[cIndex][1]  *fmin(1-(float)tamnt/768, 255), 0), fmax(  color[cIndex][2]  *fmin(1-(float)tamnt/768, 255), 0), 255);
-
+				}
 
 				//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 				
@@ -328,7 +481,7 @@ SDL_Rect rL[1] = {
 				}
 				//tamnt-=1;
 				//SDL_Rect rect = {i, 0, 1, 768-tamnt};
-				SDL_Rect rect = {i*5, (768-(dist-tamnt))/2, 5, fmax(dist-tamnt, 0)};
+				SDL_Rect rect = {i*4.5-5, (768-(dist-tamnt))/2, 5, fmax(dist-tamnt, 0)};
 				SDL_SetRenderDrawColor(renderer, fmax(255*fmin(1-(float)tamnt/768, 255), 0), 0, 0, 255);
 				
 				//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -342,7 +495,7 @@ SDL_Rect rL[1] = {
 		#if debug == 1
 		SDL_RenderDrawLine(renderer, x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt);
 		#endif
-		fra+=0.01/3;
+		fra+=0.01/(3);
 
 		}
         //SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -352,6 +505,10 @@ SDL_Rect rL[1] = {
 	#if debug == 1
 		for(int i = 0; i<sizeof(rL)/sizeof(SDL_Rect); i++) {
 			SDL_RenderDrawRect(renderer, &rL[i]);
+		}
+
+		for(int i = 0; i<sizeof(cL)/sizeof(circle); i++) {
+			DrawCircle(renderer, cL[i].x, cL[i].y, cL[i].r);
 		}
 	#endif
 

@@ -14,6 +14,48 @@
 #define SW WIN_WIDTH
 
 
+// https://discourse.libsdl.org/t/query-how-do-you-draw-a-circle-in-sdl2-sdl2/33379
+    void DrawCircle(SDL_Renderer* renderer, int32_t centreX, int32_t centreY, int32_t radius)
+    {
+    const int32_t diameter = (radius * 2);
+
+    int32_t x = (radius - 1);
+    int32_t y = 0;
+    int32_t tx = 1;
+    int32_t ty = 1;
+    int32_t error = (tx - diameter);
+
+    while (x >= y)
+    {
+    // Each of the following renders an octant of the circle
+    SDL_RenderDrawPoint(renderer, centreX + x, centreY - y);
+    SDL_RenderDrawPoint(renderer, centreX + x, centreY + y);
+    SDL_RenderDrawPoint(renderer, centreX - x, centreY - y);
+    SDL_RenderDrawPoint(renderer, centreX - x, centreY + y);
+    SDL_RenderDrawPoint(renderer, centreX + y, centreY - x);
+    SDL_RenderDrawPoint(renderer, centreX + y, centreY + x);
+    SDL_RenderDrawPoint(renderer, centreX - y, centreY - x);
+    SDL_RenderDrawPoint(renderer, centreX - y, centreY + x);
+
+      if (error <= 0)
+      {
+      	++y;
+      	error += ty;
+      	ty += 2;
+      }
+
+      if (error > 0)
+      {
+      	--x;
+      	tx += 2;
+      	error += (tx - diameter);
+      }
+
+    }
+    }
+
+
+
 
 
 bool keys[7] = {false, false, false ,false, false, false, false};
@@ -29,6 +71,11 @@ float dist(float x1, float y1, float x2, float y2) {
 	return sqrt(pow(x2-x1, 2) + pow(y2-y1, 2));
 }
 
+typedef struct circle {
+	float x;
+	float y;
+	float r;
+} circle;
 
 /*
 void pixel(int x, int y, int c, uint8_t *pixels) {
@@ -120,6 +167,20 @@ int main(int argc, char **argv) {
 	//float x = 300, y = 300;
 	float x = 10, y = 10;
 	float a = 0;
+	int r = 255;
+	int g = 0;
+	int b = 0;
+	int lasy;
+	int lasg;
+	bool ong = false;
+
+	int lasr;
+	bool onr = false;
+
+	int lasb;
+	bool onb = false;
+
+
 	//uint8_t pixels[WIN_WIDTH * WIN_HEIGHT*4];
 	//uint8_t *pixels = malloc(WIN_WIDTH*WIN_HEIGHT*4);
 	//for(int i = 0; i < WIN_WIDTH*WIN_HEIGHT; i++) {
@@ -130,7 +191,11 @@ int main(int argc, char **argv) {
     bool should_quit = false;
 	int lastX = x, lastY = y;
 		int amnt = 0;
+		int amnt2 = 0;
 		SDL_Rect *rList = malloc(sizeof(SDL_Rect)*amnt);
+		int *cList1 = malloc(sizeof(int)*amnt);
+		int *cList2 = malloc(sizeof(int)*amnt);
+		int *cList3 = malloc(sizeof(int)*amnt);
     SDL_Event e;
 	bool mousePrevDown = false;
     while (!should_quit) {
@@ -235,8 +300,12 @@ int main(int argc, char **argv) {
 		int curX, curY;
 		int cornerX, cornerY;
 		SDL_Rect tmpRect = {0, 0, 0, 0};
+		circle tmpc = {0, 0, 0};
 		
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+
+		if(!keys[5]) {
+	//	if(!keys[2]) {
 		
 		if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1 && !mousePrevDown) {
 			cornerX = curX;
@@ -247,20 +316,90 @@ int main(int argc, char **argv) {
 			tmpRect = (SDL_Rect){cornerX, cornerY, curX-cornerX, curY-cornerY};
 			if(curX-cornerX > 0 &&
 			curY-cornerY > 0)  {
+			//SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 			SDL_RenderDrawRect(renderer, &tmpRect);
 			}
 		}
 		else if(mousePrevDown){
 			mousePrevDown = false;
 			rList = realloc(rList, (1+amnt)*sizeof(SDL_Rect));
+			cList1 = realloc(cList1, (1+amnt)*sizeof(int));
+			cList2 = realloc(cList2, (1+amnt)*sizeof(int));
+			cList3 = realloc(cList3, (1+amnt)*sizeof(int));
 			if(curX-cornerX > 0 &&
 			curY-cornerY > 0)  {
 			rList[amnt] = (SDL_Rect){cornerX, cornerY, curX-cornerX, curY-cornerY};
+			cList1[amnt] = r;
+			cList2[amnt] = g;
+			cList3[amnt] = b;
 			amnt++;
 			}
 		}
 		for(int i = 0; i<amnt; i++) {
+			//SDL_Log("%d, %d, %d", cList1[i], cList2[i], cList3[i]);
+			SDL_SetRenderDrawColor(renderer, cList1[i], cList2[i], cList3[i], 255);
 			SDL_RenderDrawRect(renderer, &rList[i]);
+		}
+
+
+//		}// else {
+
+
+
+		//}
+		} else {
+			SDL_Rect red = {100, 300, 100, 100};
+			SDL_Rect green = {300, 300, 100, 100};
+			SDL_Rect blue = {500, 300, 100, 100};
+			SDL_Rect all = {700, 300, 100, 100};
+
+			if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1 ) {
+			if(!keys[6]) {
+			if(sqrcol(curX, curY, red)) {
+				r++;
+			}
+			if(sqrcol(curX, curY, green)) {
+				g++;
+			}
+			if(sqrcol(curX, curY, blue)) {
+				b++;
+			}
+			} else {
+
+			if(sqrcol(curX, curY, red)) {
+				r--;
+			}
+			if(sqrcol(curX, curY, green)) {
+				g--;
+			}
+			if(sqrcol(curX, curY, blue)) {
+				b--;
+			}
+			}
+
+			}
+
+			if (g > 255) g = 255;
+			if (g < 0) g = 0;
+			if (r > 255) r = 255;
+			if (r < 0) r = 0;
+			if (b > 255) b = 255;
+			if (b < 0) b = 0;
+			SDL_SetRenderDrawColor(renderer, r, 0, 0, 255);
+
+			SDL_RenderFillRect(renderer, &red);
+
+			SDL_SetRenderDrawColor(renderer, 0, g, 0, 255);
+
+			SDL_RenderFillRect(renderer, &green);
+
+			SDL_SetRenderDrawColor(renderer, 0, 0, b, 255);
+
+			SDL_RenderFillRect(renderer, &blue);
+			
+			SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+
+			SDL_RenderFillRect(renderer, &all);
 		}
 
 		//SDL_RenderDrawLine(renderer, x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt);
@@ -271,7 +410,9 @@ int main(int argc, char **argv) {
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderPresent(renderer);
-    }
+    
+
+	}
 
     //SDL_DestroyRenderer(renderer);
     //SDL_DestroyWindow(window);
@@ -283,8 +424,13 @@ int main(int argc, char **argv) {
 		SDL_Rect cR = rList[i];
 		printf("{%d,%d,%d,%d},\n", cR.x, cR.y, cR.w, cR.h);
 	}
-	printf("}");
+	printf("};\n\n");
 	
+	printf("int color[%d][3] = {\n ", amnt);
+	for(int i = 0; i<amnt; i++) {
+		printf("{%d,%d,%d},\n", cList1[i], cList2[i], cList3[i]);
+	}
+	printf("};\n");
 
     return 0;
 }
