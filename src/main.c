@@ -93,6 +93,14 @@ bool sqrcol(float x, float y, SDL_Rect rect) {
 	return false;
 }
 
+bool circol(float x, float y, float cX, float cY, float rad) {
+	if(dist(x, y, cX, cY) < rad) {
+		return true;
+		// i know i can just return the boolean ^^ this is for debugging remind me to reyurn boolean
+	}
+	return false;
+}
+
 int main(int argc, char **argv) {
     // SDL init
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -273,9 +281,15 @@ SDL_Rect rL[1] = {
 		for(; ; tamnt+=res) {
 			for(int i = 0; i<sizeof(rL)/sizeof(SDL_Rect); i++)
 			{
-				if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])) {
+				if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, 500, 500, 60)*/) {
 					col = true;
 					cIndex = i;
+					// steps back after collisions (nearly same result as increasing res, except corners are slightly rounded)
+					// circol works but i am too lazy too put them somewhere (i need to put it in the builder)
+					for(;sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, 500, 500, 20)*/;) {
+						tamnt--;
+
+					}
 					break;
 					
 				}

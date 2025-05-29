@@ -277,6 +277,7 @@ int main(int argc, char **argv) {
     //SDL_DestroyWindow(window);
     //SDL_Quit();
 	// these are causing free() invalid pointer for some reason
+
 	printf("SDL_Rect rL[%d] = {\n ", amnt);
 	for(int i = 0; i<amnt; i++) {
 		SDL_Rect cR = rList[i];
