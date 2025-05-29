@@ -280,6 +280,15 @@ int main(int argc, char **argv) {
 			a+=0.04;
 		}
 
+		if(keys[5]) {
+			x-=cos(a)*5;
+			y+=sin(a)*5;
+		}
+		if(keys[6]) {
+			x+=cos(a)*5;
+			y-=sin(a)*5;
+		}
+
 
 		
 
@@ -384,12 +393,16 @@ int color[12][3] = {
 
 circle cL[] = {
 	{600, 500, 50},
-	{400, 500, 50}
+	{400, 500, 50},
+	{200, 500, 50},
+	{800, 500, 50},
 };
 
 int ccolor[][3] = {
 	{255, 255, 0},
-	{0, 255, 255}
+	{0, 255, 255},
+	{255, 255, 255},
+	{255, 0, 255}
 };
 
 bool circ = false;
@@ -404,6 +417,7 @@ SDL_Rect rL[1] = {
 		tamnt = tamntc - 300*0.01/3;
 		//float dist = sqrt(pow(768,2) + pow(1366,2));
 		float dist = 768;
+		float falloff;
 		//float dist = 1366;
 		bool col = false;
 		int cIndex;
