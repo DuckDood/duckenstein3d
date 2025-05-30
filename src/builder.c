@@ -196,8 +196,19 @@ int main(int argc, char **argv) {
 		int *cList1 = malloc(sizeof(int)*amnt);
 		int *cList2 = malloc(sizeof(int)*amnt);
 		int *cList3 = malloc(sizeof(int)*amnt);
+
+
+
+		circle *cList = malloc(sizeof(circle)*amnt2);
+
+
+		int *ccList1 = malloc(sizeof(int)*amnt2);
+		int *ccList2 = malloc(sizeof(int)*amnt2);
+		int *ccList3 = malloc(sizeof(int)*amnt2);
+
     SDL_Event e;
 	bool mousePrevDown = false;
+		bool ic = false;
     while (!should_quit) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
@@ -305,7 +316,7 @@ int main(int argc, char **argv) {
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
 		if(!keys[5]) {
-	//	if(!keys[2]) {
+		if(!keys[2] && !ic) {
 		
 		if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1 && !mousePrevDown) {
 			cornerX = curX;
@@ -335,18 +346,55 @@ int main(int argc, char **argv) {
 			amnt++;
 			}
 		}
+		} else {
+				ic=true;
+			if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1 && !mousePrevDown) {
+				mousePrevDown=true;
+				cornerX = curX;
+				cornerY = curY;
+			} else if (SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1) {
+				tmpc = (circle){cornerX, cornerY, dist(cornerX, cornerY, curX, curY)};
+				DrawCircle(renderer, tmpc.x, tmpc.y, tmpc.r);
+				
+			} else if(mousePrevDown) {
+				mousePrevDown = false;
+				ic=false;
+
+
+				// oh boy i hate c mem management
+				// got realloc(clist1) mixed up with realloc(cclist1) and stuff
+				ccList1 = realloc(ccList1, (1+amnt2)*sizeof(int));
+				ccList2 = realloc(ccList2, (1+amnt2)*sizeof(int));
+				ccList3 = realloc(ccList3, (1+amnt2)*sizeof(int));
+				cList = realloc(cList, (1+amnt2)*sizeof(circle));
+
+				ccList1[amnt2] = r;
+				ccList2[amnt2] = g;
+				ccList3[amnt2] = b;
+
+				
+				cList[amnt2].x = cornerX;
+				cList[amnt2].y = cornerY;
+				cList[amnt2].r = dist(cornerX, cornerY, curX, curY);
+				amnt2++;
+			}
+
+
+
+		}
 		for(int i = 0; i<amnt; i++) {
 			//SDL_Log("%d, %d, %d", cList1[i], cList2[i], cList3[i]);
 			SDL_SetRenderDrawColor(renderer, cList1[i], cList2[i], cList3[i], 255);
 			SDL_RenderDrawRect(renderer, &rList[i]);
 		}
+		for(int i = 0; i<amnt2; i++) {
+			//SDL_Log("%d, %d, %d", cList1[i], cList2[i], cList3[i]);
+			//SDL_SetRenderDrawColor(renderer, cList1[i], cList2[i], cList3[i], 255);
+			SDL_SetRenderDrawColor(renderer, ccList1[i], ccList2[i], ccList3[i], 255);
+			DrawCircle(renderer, cList[i].x, cList[i].y, cList[i].r);
+		}
 
 
-//		}// else {
-
-
-
-		//}
 		} else {
 			SDL_Rect red = {100, 300, 100, 100};
 			SDL_Rect green = {300, 300, 100, 100};
@@ -430,7 +478,22 @@ int main(int argc, char **argv) {
 	for(int i = 0; i<amnt; i++) {
 		printf("{%d,%d,%d},\n", cList1[i], cList2[i], cList3[i]);
 	}
-	printf("};\n");
+	printf("};\n\n");
+
+	printf("circle cL[%d] = {\n ", amnt2);
+	for(int i = 0; i<amnt2; i++) {
+		circle cR = cList[i];
+		printf("{%d,%d,%d},\n", (int)cR.x, (int)cR.y, (int)cR.r);
+	}
+	printf("};\n\n");
+
+
+	printf("int ccolor[%d][3] = {\n ", amnt2);
+	for(int i = 0; i<amnt2; i++) {
+		circle cR = cList[i];
+		printf("{%d,%d,%d},\n", ccList1[i], ccList2[i], ccList3[i]);
+	}
+	printf("};\n\n");
 
     return 0;
 }
