@@ -153,6 +153,25 @@ bool circol(float x, float y, circle c) {
 	return false;
 }
 
+// chat is it bad to define structs in #if???
+#if debug == 1 
+	struct ray {
+		int x1;
+		int y1;
+		int x2;
+		int y2;
+	};
+typedef struct ray ray;
+
+
+void drawray(SDL_Renderer *renderer, ray r) {
+		SDL_RenderDrawLine(renderer, r.x1, r.y1, r.x2, r.y2);
+};
+
+ray re[300];
+#endif
+
+
 int main(int argc, char **argv) {
     // SDL init
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -394,7 +413,7 @@ circle cL[5] = {
 
 int ccolor[5][3] = {
  //{255,0,0},
- {2550,1230,2600},
+ {0,55500,0},
 {255,217,255},
 {255,217,255},
 {255,217,255},
@@ -504,7 +523,8 @@ bool circ = false;
 		}
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 		#if debug == 1
-		SDL_RenderDrawLine(renderer, x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt);
+		re[i] = (ray){x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt};
+		//SDL_RenderDrawLine(renderer, x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt);
 		#endif
 		fra+=0.01/(3);
 
@@ -521,6 +541,12 @@ bool circ = false;
 		for(int i = 0; i<sizeof(cL)/sizeof(circle); i++) {
 			DrawCircle(renderer, cL[i].x, cL[i].y, cL[i].r);
 		}
+
+		for(int i = 0; i<300; i++) {
+			drawray(renderer, re[i]);
+		}
+
+
 	#endif
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
