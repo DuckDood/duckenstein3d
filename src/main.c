@@ -135,6 +135,18 @@ typedef struct circle {
 	float r;
 } circle;
 
+typedef struct float2 {
+	float x;
+	float y;
+}
+float2;
+
+typedef struct triangle {
+	float2 p1;
+	float2 p2;
+	float2 p3;
+} triangle;
+
 bool sqrcol(float x, float y, SDL_Rect rect) {
 /*	if(x > rect.x && x < rect.x + rect.w  && y > rect.y && y <rect.y+rect.h) {
 		return true;
@@ -151,6 +163,33 @@ bool circol(float x, float y, circle c) {
 		// i know i can just return the boolean ^^ this is for debugging remind me to reyurn boolean
 	}
 	return false;
+}
+
+float dot(float2 p1, float2 p2) {
+	return p1.x*p2.x + p1.y*p2.y;
+}
+float2 perp(float2 p) {
+	p = (float2){p.y, -p.x};
+	return p;
+}
+
+bool pOnRs(float2 p1, float2 p2, float2 pp) {
+	float2 ap = {pp.x-p1.x, pp.y-p1.y};
+	float2 aa = perp((float2){p2.x - pp.x, p2.y-pp.y});
+	return dot(ap, aa)>=0;
+}
+
+bool tricol(float x, float y, triangle t) {
+	bool ab = pOnRs(t.p1, t.p2, (float2){x, y});
+	bool ac = pOnRs(t.p2, t.p3, (float2){x, y});
+	bool ad = pOnRs(t.p3, t.p1, (float2){x, y});
+	return ab == ac && ac == ad;	
+}
+
+void drawTri(SDL_Renderer *renderer, triangle t) {
+	SDL_RenderDrawLine(renderer, t.p1.x, t.p1.y, t.p2.x, t.p2.y);
+	SDL_RenderDrawLine(renderer, t.p2.x, t.p2.y, t.p3.x, t.p3.y);
+	SDL_RenderDrawLine(renderer, t.p3.x, t.p3.y, t.p1.x, t.p1.y);
 }
 
 // chat is it bad to define structs in #if???
@@ -379,6 +418,7 @@ int ccolor[7][3] = {
 };
 
 
+triangle tri = { {10 + 100, 10 + 100}, {20 + 100, 100 + 100}, {50 + 100, 50 + 100} };
 
 
 bool circ = false;
@@ -429,6 +469,17 @@ bool circ = false;
 				}
 			}
 
+			if(tricol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, tri)) {
+				col = true;
+				for(;/*sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i]) || */tricol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, tri);) {
+					tamnt--;
+
+				}
+				// colors no working because
+				// duh
+				// thats 23 lines below this
+			}
+
 			//if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, r) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, re)/* || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, top) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, bottom)*/) {
 			if(col/* || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, top) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, bottom)*/) {
 				col = false;
@@ -436,7 +487,8 @@ bool circ = false;
 					x=lastX;
 					y=lastY;
 				}
-				SDL_Rect rect = {i*4.5-5, (768-(dist-tamnt))/2, 5, fmax(dist-tamnt, 0)};
+				int height = fmax(dist-tamnt, 0);
+				SDL_Rect rect = {i*4.5-5, (768-(height))/2, 5, height};
 				//SDL_SetRenderDrawColor(renderer, ((float)tamnt/(float)255)*255, 0, 0, 255);
 				//SDL_SetRenderDrawColor(renderer, fmin(dist(x, y, x+sin(fra)*tamnt, 255), y+cos(fra)*tamnt  ) , 0, 0, 255);
 				
@@ -467,7 +519,8 @@ bool circ = false;
 				}
 				//tamnt-=1;
 				//SDL_Rect rect = {i, 0, 1, 768-tamnt};
-				SDL_Rect rect = {i*4.5-5, (768-(dist-tamnt))/2, 5, fmax(dist-tamnt, 0)};
+				int height= fmax(dist-tamnt, 0);
+				SDL_Rect rect = {i*4.5-5, (768-(height))/2, 5, height};
 				SDL_SetRenderDrawColor(renderer, fmax(255*fmin(1-(float)tamnt/768, 255), 0), 0, 0, 255);
 				
 				//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -504,6 +557,7 @@ bool circ = false;
 
 
 	#endif
+		drawTri(renderer, tri);
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderPresent(renderer);
