@@ -1,4 +1,4 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 #include <SDL2/SDL.h>
@@ -418,10 +418,18 @@ int ccolor[7][3] = {
 };
 
 
-triangle tri = { {10 + 100, 10 + 100}, {20 + 100, 100 + 100}, {50 + 100, 50 + 100} };
+triangle tL[] = {
+	{ {10 + 100, 10 + 100}, {20 + 100, 100 + 100}, {50 + 100, 50 + 100} },
+	{ {700, 700}, {600, 700}, {650,600} },
+};
+int tcolor[][3] = {
+	{0, 255, 255},
+	{0, 255, 255},
+};
 
 
 bool circ = false;
+bool tri = false;
 
 
 
@@ -451,7 +459,6 @@ bool circ = false;
 					
 				}
 			}
-
 			for(int i = 0; i<sizeof(cL)/sizeof(circle); i++)
 			{
 				if(/*sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i]) || */circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, cL[i])) {
@@ -469,15 +476,23 @@ bool circ = false;
 				}
 			}
 
-			if(tricol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, tri)) {
-				col = true;
-				for(;/*sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i]) || */tricol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, tri);) {
-					tamnt--;
+			for(int i = 0; i<sizeof(tL)/sizeof(triangle); i++) 
+			{
 
+				if(tricol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, tL[i])) {
+					col = true;
+					tri = true;
+					cIndex = i;
+					for(;tricol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, tL[i]);) {
+						tamnt--;
+	
+					}
+					break;
+					// colors no working because
+					// duh
+					// thats 23 lines below this
 				}
-				// colors no working because
-				// duh
-				// thats 23 lines below this
+
 			}
 
 			//if(sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, r) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, re)/* || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, top) || sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, bottom)*/) {
@@ -499,7 +514,11 @@ bool circ = false;
 				if(circ) {
 				circ = false;
 				SDL_SetRenderDrawColor(renderer, fmax( ccolor[cIndex][0] *fmin(1-(float)tamnt/768, 255), 0), fmax( ccolor[cIndex][1]  *fmin(1-(float)tamnt/768, 255), 0), fmax(  ccolor[cIndex][2]  *fmin(1-(float)tamnt/768, 255), 0), 255);
-				} else {
+				} else if (tri){
+				tri = false;
+				SDL_SetRenderDrawColor(renderer, fmax( tcolor[cIndex][0] *fmin(1-(float)tamnt/768, 255), 0), fmax( tcolor[cIndex][1]  *fmin(1-(float)tamnt/768, 255), 0), fmax(  tcolor[cIndex][2]  *fmin(1-(float)tamnt/768, 255), 0), 255);
+				}
+				else {
 				SDL_SetRenderDrawColor(renderer, fmax( color[cIndex][0] *fmin(1-(float)tamnt/768, 255), 0), fmax( color[cIndex][1]  *fmin(1-(float)tamnt/768, 255), 0), fmax(  color[cIndex][2]  *fmin(1-(float)tamnt/768, 255), 0), 255);
 				}
 
@@ -551,13 +570,16 @@ bool circ = false;
 			DrawCircle(renderer, cL[i].x, cL[i].y, cL[i].r);
 		}
 
+		for(int i = 0; i<sizeof(tL)/sizeof(triangle); i++) {
+			drawTri(renderer, tL[i]);
+		}
+
 		for(int i = 0; i<300; i++) {
 			drawray(renderer, re[i]);
 		}
 
 
 	#endif
-		drawTri(renderer, tri);
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderPresent(renderer);
