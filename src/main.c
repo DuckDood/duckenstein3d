@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 //#define WIN_WIDTH 320
 //#define WIN_HEIGHT 180
@@ -212,11 +213,24 @@ ray re[300];
 
 
 int main(int argc, char **argv) {
+	//The music that will be played
+Mix_Music *music = NULL;
+
+//The sound effects that will be used
+Mix_Chunk *scratch = NULL;
+Mix_Chunk *high = NULL;
+Mix_Chunk *med = NULL;
+Mix_Chunk *low = NULL;
+
+
     // SDL init
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return 1;
     }
+
+	
 
     // create SDL window
     SDL_Window *window = SDL_CreateWindow("light2d",
@@ -236,6 +250,19 @@ int main(int argc, char **argv) {
         SDL_Log("Unable to create renderer: %s", SDL_GetError());
         return 1;
     }
+
+	if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 )
+	{
+		SDL_Log("Unable to start SDL2_Mixer: %s", SDL_GetError());
+		return 1;
+	}
+	music = Mix_LoadMUS("doom gate.mp3");
+
+	if(music == NULL) {
+		SDL_Log("Unable to load music: %s", SDL_GetError());
+		return -1;
+	}
+	Mix_PlayMusic(music, -1);
     
 
 	//float x = 300, y = 300;
@@ -366,7 +393,7 @@ int main(int argc, char **argv) {
 							   //
 							   //
 
-
+/*
 		SDL_Rect rL[12] = {
  {250,273,89,116},
 {338,274,84,115},
@@ -415,8 +442,31 @@ int ccolor[7][3] = {
 {186,182,177},
 {89,88,75},
 {89,88,75},
+};*/
+/*
+		SDL_Rect rL[4] = {
+ {314,49,35,76},
+{63,287,79,82},
+{108,220,64,48},
+{128,78,28,22},
 };
 
+int color[4][3] = {
+ {255,0,0},
+{255,0,0},
+{255,0,0},
+{255,0,0},
+};
+
+circle cL[2] = {
+ {177,177,173},
+{303,281,138},
+};
+
+int ccolor[2][3] = {
+ {255,0,0},
+{255,0,0},
+};
 
 triangle tL[] = {
 	{ {10 + 100, 10 + 100}, {20 + 100, 100 + 100}, {50 + 100, 50 + 100} },
@@ -426,6 +476,71 @@ int tcolor[][3] = {
 	{0, 255, 255},
 	{0, 255, 255},
 };
+
+*/
+
+SDL_Rect rL[6] = {
+ {449,253,310,310},
+{309,244,70,102},
+{1214,463,116,154},
+{853,414,60,72},
+{283,452,63,83},
+{179,137,39,100},
+};
+
+int color[6][3] = {
+ {255,0,0},
+{255,0,0},
+{255,0,226},
+{255,0,226},
+{255,0,226},
+{164,67,152},
+};
+
+circle cL[8] = {
+ {961,321,87},
+{598,230,92},
+{94,332,3},
+{143,316,0},
+{123,249,0},
+{133,373,65},
+{139,601,54},
+{459,694,104},
+};
+
+int ccolor[8][3] = {
+ {255,0,0},
+{255,0,226},
+{164,67,152},
+{164,67,152},
+{164,67,152},
+{164,67,152},
+{164,67,152},
+{164,67,152},
+};
+
+triangle tL[6] = {
+ { {954,661}, {978,648}, {949,580}, },
+{ {247,507}, {303,641}, {186,610}, },
+{ {196,366}, {210,410}, {201,402}, },
+{ {804,184}, {882,184}, {847,159}, },
+{ {1249,342}, {1141,294}, {1217,277}, },
+{ {664,671}, {696,642}, {685,631}, },
+};
+
+int tcolor[8][3] = {
+ {255,0,0},
+{255,0,0},
+{255,0,0},
+{255,0,226},
+{255,0,226},
+{164,67,152},
+};
+
+
+
+
+
 
 
 bool circ = false;

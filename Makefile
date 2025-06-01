@@ -20,11 +20,11 @@ obj/main.o: src/main.c
 	${CC} src/main.c -c -o obj/main.o -Dres=${res} -Ddebug=${debug} 
 
 build/3d: obj/main.o 
-	gcc obj/main.o  -o build/3d -lGL -lSDL2 -lm 
+	gcc obj/main.o  -o build/3d -lGL -lSDL2 -lm -lSDL2_mixer 
 
 obj/builder.o: src/builder.c
 	${CC} src/builder.c -c -o obj/builder.o -Dres=${res} -Ddebug=${debug} 
 
 build/builder: obj/builder.o 
-	gcc obj/builder.o  -o build/builder -lGL -lSDL2 -lm 
+	gcc obj/builder.o  -o build/builder -lGL -lSDL2 -lm -lSDL2_mixer 
 

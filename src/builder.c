@@ -76,7 +76,22 @@ typedef struct circle {
 	float y;
 	float r;
 } circle;
+typedef struct float2 {
+	float x;
+	float y;
+}
+float2;
+typedef struct triangle {
+	float2 p1;
+	float2 p2;
+	float2 p3;
+} triangle;
 
+void drawTri(SDL_Renderer *renderer, triangle t) {
+	SDL_RenderDrawLine(renderer, t.p1.x, t.p1.y, t.p2.x, t.p2.y);
+	SDL_RenderDrawLine(renderer, t.p2.x, t.p2.y, t.p3.x, t.p3.y);
+	SDL_RenderDrawLine(renderer, t.p3.x, t.p3.y, t.p1.x, t.p1.y);
+}
 /*
 void pixel(int x, int y, int c, uint8_t *pixels) {
 	if(y > WIN_HEIGHT-1) {
@@ -192,6 +207,7 @@ int main(int argc, char **argv) {
 	int lastX = x, lastY = y;
 		int amnt = 0;
 		int amnt2 = 0;
+		int amnt3 = 0;
 		SDL_Rect *rList = malloc(sizeof(SDL_Rect)*amnt);
 		int *cList1 = malloc(sizeof(int)*amnt);
 		int *cList2 = malloc(sizeof(int)*amnt);
@@ -206,9 +222,22 @@ int main(int argc, char **argv) {
 		int *ccList2 = malloc(sizeof(int)*amnt2);
 		int *ccList3 = malloc(sizeof(int)*amnt2);
 
+		triangle *tList = malloc(sizeof(triangle)*amnt3);
+
+		int *tcList1 = malloc(sizeof(int)*amnt3);
+		int *tcList2 = malloc(sizeof(int)*amnt3);
+		int *tcList3 = malloc(sizeof(int)*amnt3);
+
     SDL_Event e;
 	bool mousePrevDown = false;
 		bool ic = false;
+		bool it = false;
+		int tc = -1;
+		float2 tmppoints[3] = {
+			{0,0},
+			{0,0},
+			{0,0}
+		};
     while (!should_quit) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
@@ -312,11 +341,15 @@ int main(int argc, char **argv) {
 		int cornerX, cornerY;
 		SDL_Rect tmpRect = {0, 0, 0, 0};
 		circle tmpc = {0, 0, 0};
+		triangle tmpt = { {0, 0}, {0, 0}, {0, 0} };
 		
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
 		if(!keys[5]) {
-		if(!keys[2] && !ic) {
+			
+		if(!keys[KEY_A]) {
+	
+		if(!keys[2] && !ic ) {
 		
 		if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1 && !mousePrevDown) {
 			cornerX = curX;
@@ -382,6 +415,40 @@ int main(int argc, char **argv) {
 
 
 		}
+
+
+		} else {
+			if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1 && !mousePrevDown) {
+				mousePrevDown = true;
+			} else if(SDL_BUTTON(SDL_GetMouseState(&curX, &curY)) == 1) {
+				
+			} else if(mousePrevDown) {
+				//SDL_Log("hello");
+				mousePrevDown = false;
+				tc++;
+				SDL_Log("%d", tc);
+				tmppoints[tc] = (float2){curX, curY};
+				if(tc==2) {
+					tc = -1;
+					tcList1 = realloc(tcList1, (1+amnt3)*sizeof(int));
+					tcList2 = realloc(tcList2, (1+amnt3)*sizeof(int));
+					tcList3 = realloc(tcList3, (1+amnt3)*sizeof(int));
+					tList = realloc(tList, (1+amnt3)*sizeof(triangle));
+
+					tList[amnt3].p1 = tmppoints[0];
+					tList[amnt3].p2 = tmppoints[1];
+					tList[amnt3].p3 = tmppoints[2];
+
+					tcList1[amnt3] = r;
+					tcList2[amnt3] = g;
+					tcList3[amnt3] = b;
+
+					amnt3++;
+				}
+			}
+			
+		}
+
 		for(int i = 0; i<amnt; i++) {
 			//SDL_Log("%d, %d, %d", cList1[i], cList2[i], cList3[i]);
 			SDL_SetRenderDrawColor(renderer, cList1[i], cList2[i], cList3[i], 255);
@@ -393,6 +460,13 @@ int main(int argc, char **argv) {
 			SDL_SetRenderDrawColor(renderer, ccList1[i], ccList2[i], ccList3[i], 255);
 			DrawCircle(renderer, cList[i].x, cList[i].y, cList[i].r);
 		}
+		for(int i = 0; i<amnt3; i++) {
+			//SDL_Log("%d, %d, %d", cList1[i], cList2[i], cList3[i]);
+			//SDL_SetRenderDrawColor(renderer, cList1[i], cList2[i], cList3[i], 255);
+			SDL_SetRenderDrawColor(renderer, tcList1[i], tcList2[i], tcList3[i], 255);
+			drawTri(renderer, tList[i]);
+		}
+
 
 
 		} else {
@@ -492,6 +566,21 @@ int main(int argc, char **argv) {
 	for(int i = 0; i<amnt2; i++) {
 		circle cR = cList[i];
 		printf("{%d,%d,%d},\n", ccList1[i], ccList2[i], ccList3[i]);
+	}
+	printf("};\n\n");
+
+	printf("triangle tL[%d] = {\n ", amnt3);
+	for(int i = 0; i<amnt3; i++) {
+		triangle tR = tList[i];
+		printf("{ {%d,%d}, {%d,%d}, {%d,%d}, },\n", (int)tR.p1.x, (int)tR.p1.y, (int)tR.p2.x, (int)tR.p2.y, (int)tR.p3.x, (int)tR.p3.y);
+	}
+	printf("};\n\n");
+
+
+	printf("int tcolor[%d][3] = {\n ", amnt2);
+	for(int i = 0; i<amnt3; i++) {
+		triangle tR = tList[i];
+		printf("{%d,%d,%d},\n", tcList1[i], tcList2[i], tcList3[i]);
 	}
 	printf("};\n\n");
 
