@@ -577,7 +577,7 @@ int main(int argc, char **argv) {
 	printf("};\n\n");
 
 
-	printf("int tcolor[%d][3] = {\n ", amnt2);
+	printf("int tcolor[%d][3] = {\n ", amnt3);
 	for(int i = 0; i<amnt3; i++) {
 		triangle tR = tList[i];
 		printf("{%d,%d,%d},\n", tcList1[i], tcList2[i], tcList3[i]);
