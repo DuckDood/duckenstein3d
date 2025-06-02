@@ -3,6 +3,7 @@
 #include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include "level.h"
 
 //#define WIN_WIDTH 320
 //#define WIN_HEIGHT 180
@@ -130,6 +131,7 @@ void clearBackground()
 
 */
 
+/*
 typedef struct circle {
 	float x;
 	float y;
@@ -146,7 +148,7 @@ typedef struct triangle {
 	float2 p1;
 	float2 p2;
 	float2 p3;
-} triangle;
+} triangle;*/
 
 bool sqrcol(float x, float y, SDL_Rect rect) {
 /*	if(x > rect.x && x < rect.x + rect.w  && y > rect.y && y <rect.y+rect.h) {
@@ -352,13 +354,14 @@ Mix_Chunk *low = NULL;
 			//y+=10;
 			x+=sin(a)*10*tspeed;
 			y+=cos(a)*10*tspeed;
-			vbob+=0.18;
+			vbob+=0.28;
 		}
 
 		if(keys[KEY_S]) {
 			//y-=10;
 			x-=sin(a)*10*tspeed;
 			y-=cos(a)*10*tspeed;
+			vbob+=0.28;
 		}
 
 		if(keys[KEY_A]) {
@@ -486,6 +489,7 @@ int tcolor[][3] = {
 
 */
 
+		/*
 SDL_Rect rL[6] = {
  {449,253,310,310},
 {309,244,70,102},
@@ -544,7 +548,7 @@ int tcolor[8][3] = {
 {164,67,152},
 };
 
-
+*/
 
 
 
