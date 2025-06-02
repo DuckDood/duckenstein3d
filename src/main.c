@@ -279,6 +279,9 @@ Mix_Chunk *low = NULL;
     bool should_quit = false;
 	int lastX = x, lastY = y;
     SDL_Event e;
+	float vbob = 0;
+	float z = 0;
+	float rectYoff = sin(vbob);
     while (!should_quit) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
@@ -349,6 +352,7 @@ Mix_Chunk *low = NULL;
 			//y+=10;
 			x+=sin(a)*10*tspeed;
 			y+=cos(a)*10*tspeed;
+			vbob+=0.18;
 		}
 
 		if(keys[KEY_S]) {
@@ -381,6 +385,9 @@ Mix_Chunk *low = NULL;
 		} else {
 			tspeed = 1;
 		}
+
+		rectYoff = sin(vbob) > 0? sin(vbob)*20+20 + z : sin(vbob)*17+20 + z;
+		SDL_Log("%f", rectYoff);
 
 
 		
@@ -618,7 +625,7 @@ bool tri = false;
 					y=lastY;
 				}
 				int height = fmax(dist-tamnt, 0);
-				SDL_Rect rect = {i*4.5-5, (768-(height))/2, 5, height};
+				SDL_Rect rect = {i*4.5-5, (rectYoff) + (float)(768-(height))/2, 5, height};
 				//SDL_SetRenderDrawColor(renderer, ((float)tamnt/(float)255)*255, 0, 0, 255);
 				//SDL_SetRenderDrawColor(renderer, fmin(dist(x, y, x+sin(fra)*tamnt, 255), y+cos(fra)*tamnt  ) , 0, 0, 255);
 				
@@ -654,7 +661,7 @@ bool tri = false;
 				//tamnt-=1;
 				//SDL_Rect rect = {i, 0, 1, 768-tamnt};
 				int height= fmax(dist-tamnt, 0);
-				SDL_Rect rect = {i*4.5-5, (768-(height))/2, 5, height};
+				SDL_Rect rect = {i*4.5-5, (rectYoff) + (float)(768-(height))/2, 5, height};
 				SDL_SetRenderDrawColor(renderer, fmax(255*fmin(1-(float)tamnt/768, 255), 0), 0, 0, 255);
 				
 				//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
