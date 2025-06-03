@@ -390,7 +390,6 @@ Mix_Chunk *low = NULL;
 		}
 
 		rectYoff = sin(vbob) > 0? sin(vbob)*20+20 + z : sin(vbob)*17+20 + z;
-		SDL_Log("%f", rectYoff);
 
 
 		

@@ -151,6 +151,35 @@ bool sqrcol(float x, float y, SDL_Rect rect) {
 	*/
 	return x > rect.x && x < rect.x + rect.w  && y > rect.y && y <rect.y+rect.h;
 }
+bool circol(float x, float y, circle c) {
+	if(dist(x, y, c.x, c.y) < c.r) {
+		return true;
+		// i know i can just return the boolean ^^ this is for debugging remind me to reyurn boolean
+	}
+	return false;
+}
+
+float dot(float2 p1, float2 p2) {
+	return p1.x*p2.x + p1.y*p2.y;
+}
+float2 perp(float2 p) {
+	p = (float2){p.y, -p.x};
+	return p;
+}
+
+bool pOnRs(float2 p1, float2 p2, float2 pp) {
+	float2 ap = {pp.x-p1.x, pp.y-p1.y};
+	float2 aa = perp((float2){p2.x - pp.x, p2.y-pp.y});
+	return dot(ap, aa)>=0;
+}
+
+bool tricol(float x, float y, triangle t) {
+	bool ab = pOnRs(t.p1, t.p2, (float2){x, y});
+	bool ac = pOnRs(t.p2, t.p3, (float2){x, y});
+	bool ad = pOnRs(t.p3, t.p1, (float2){x, y});
+	return ab == ac && ac == ad;	
+}
+
 
 int main(int argc, char **argv) {
     // SDL init
@@ -194,6 +223,8 @@ int main(int argc, char **argv) {
 
 	int lasb;
 	bool onb = false;
+
+	bool mcol = false;
 
 
 	//uint8_t pixels[WIN_WIDTH * WIN_HEIGHT*4];
@@ -342,6 +373,51 @@ int main(int argc, char **argv) {
 		SDL_Rect tmpRect = {0, 0, 0, 0};
 		circle tmpc = {0, 0, 0};
 		triangle tmpt = { {0, 0}, {0, 0}, {0, 0} };
+		int liIndex = 0;
+		int rmIndex = 0;
+		bool mcol = false;
+
+		for(int i = 0; i < amnt; i++) {
+			SDL_GetMouseState(&curX, &curY);
+			if(keys[4] && sqrcol(curX, curY, rList[i])){
+				mcol = true;
+				rmIndex=i;
+				liIndex = 1;
+				break;
+			}
+		}
+
+
+		for(int i = 0; i < amnt2; i++) {
+			SDL_GetMouseState(&curX, &curY);
+			if(keys[4] && circol(curX, curY, cList[i])){
+				mcol = true;
+				rmIndex=i;
+				liIndex = 2;
+				break;
+			}
+		}
+
+		for(int i = 0; i < amnt3; i++) {
+			SDL_GetMouseState(&curX, &curY);
+			if(keys[4] && tricol(curX, curY, tList[i])){
+				mcol = true;
+				rmIndex=i;
+				liIndex = 3;
+				break;
+			}
+		}
+
+			mcol = false;
+			if(liIndex==1) {
+				rList[rmIndex] = (SDL_Rect){0, 0, 0, 0};
+			}
+			if(liIndex==2) {
+				cList[rmIndex] = (circle){0, 0, 0};
+			}
+			if(liIndex==3) {
+				tList[rmIndex] = (triangle){{0, 0}, {0, 0}, {0, 0}};
+			}
 		
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
@@ -426,7 +502,6 @@ int main(int argc, char **argv) {
 				//SDL_Log("hello");
 				mousePrevDown = false;
 				tc++;
-				SDL_Log("%d", tc);
 				tmppoints[tc] = (float2){curX, curY};
 				if(tc==2) {
 					tc = -1;

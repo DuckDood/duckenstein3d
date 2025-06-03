@@ -4,10 +4,10 @@ clean:
 	rm -r obj/ build/ 
 .PHONY: clean
 
-obj/:
+obj/: 
 	mkdir -p obj/
 
-build/:
+build/: 
 	mkdir -p build/
 
 ifndef res
@@ -16,7 +16,7 @@ endif
 ifndef debug
 debug := 0
 endif
-obj/main.o: src/main.c
+obj/main.o: src/main.c src/level.h
 	${CC} src/main.c -c -o obj/main.o -Dres=${res} -Ddebug=${debug} 
 
 build/3d: obj/main.o 

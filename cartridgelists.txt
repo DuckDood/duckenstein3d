@@ -15,6 +15,7 @@ var debug 0
 bopt res res
 bopt debug debug
 
+checknext level.h
 include main.c
 
 linker gcc
