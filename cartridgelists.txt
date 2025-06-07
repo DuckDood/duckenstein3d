@@ -9,11 +9,16 @@ dep m
 dep SDL2_mixer
 
 var res 10
+var xres 1
 var debug 0
+
+var bob 1
 
 
 bopt res res
+bopt xres xres
 bopt debug debug
+bopt BOBAMNT bob
 
 checknext level.h
 include main.c

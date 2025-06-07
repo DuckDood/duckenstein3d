@@ -12,9 +12,16 @@
 #define res 10
 #endif
 
+#ifndef xres
+#define xres 1
+#endif
 
 #ifndef debug
 #define debug 0
+#endif
+
+#ifndef BOBAMNT
+#define BOBAMNT 1
 #endif
 
 #define SH WIN_HEIGHT
@@ -390,6 +397,7 @@ Mix_Chunk *low = NULL;
 		}
 
 		rectYoff = sin(vbob) > 0? sin(vbob)*20+20 + z : sin(vbob)*17+20 + z;
+		rectYoff *= BOBAMNT;
 
 
 		
@@ -503,7 +511,71 @@ int color[6][3] = {
 {255,0,0},
 {255,0,226},
 {255,0,226},
-{255,0,226},
+{255,0,226}SDL_Rect rL[3] = {
+ {490,632,41,2},
+{374,587,384,51},
+{366,647,403,34},
+};
+
+int color[3][3] = {
+ {255,46,75},
+{255,46,75},
+{255,46,75},
+};
+SDL_Rect rL[3] = {
+ {490,632,41,2},
+{374,587,384,51},
+{366,647,403,34},
+};
+
+int color[3][3] = {
+ {255,46,75},
+{255,46,75},
+{255,46,75},
+};
+
+circle cL[4] = {
+ {370,224,87},
+{763,223,81},
+{366,228,32},
+{742,230,31},
+};
+
+int ccolor[4][3] = {
+ {255,206,231},
+{255,206,231},
+{0,0,0},
+{0,0,0},
+};
+
+triangle tL[1] = {
+ { {410,495}, {604,221}, {740,485}, },
+};
+
+int tcolor[1][3] = {
+ {255,74,101},
+};
+circle cL[4] = {
+ {370,224,87},
+{763,223,81},
+{366,228,32},
+{742,230,31},
+};
+
+int ccolor[4][3] = {
+ {255,206,231},
+{255,206,231},
+{0,0,0},
+{0,0,0},
+};
+
+triangle tL[1] = {
+ { {410,495}, {604,221}, {740,485}, },
+};
+
+int tcolor[1][3] = {
+ {255,74,101},
+};,
 {164,67,152},
 };
 
@@ -558,7 +630,7 @@ bool tri = false;
 
 
 
-		for(int i = 0; i<300; i++) {
+		for(int i = 0; i<300/xres; i++) {
 		tamnt = tamntc - 300*0.01/3;
 		//float dist = sqrt(pow(768,2) + pow(1366,2));
 		float dist = 768;
@@ -578,7 +650,39 @@ bool tri = false;
 					// circol works but i am too lazy too put them somewhere (i need to put it in the builder)
 					for(;sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, c)*/;) {
 						tamnt--;
+SDL_Rect rL[3] = {
+ {490,632,41,2},
+{374,587,384,51},
+{366,647,403,34},
+};
 
+int color[3][3] = {
+ {255,46,75},
+{255,46,75},
+{255,46,75},
+};
+
+circle cL[4] = {
+ {370,224,87},
+{763,223,81},
+{366,228,32},
+{742,230,31},
+};
+
+int ccolor[4][3] = {
+ {255,206,231},
+{255,206,231},
+{0,0,0},
+{0,0,0},
+};
+
+triangle tL[1] = {
+ { {410,495}, {604,221}, {740,485}, },
+};
+
+int tcolor[1][3] = {
+ {255,74,101},
+};
 					}
 					break;
 					
@@ -628,7 +732,7 @@ bool tri = false;
 					y=lastY;
 				}
 				int height = fmax(dist-tamnt, 0);
-				SDL_Rect rect = {i*4.5-5, (rectYoff) + (float)(768-(height))/2, 5, height};
+				SDL_Rect rect = {xres*i*4.6-5, (rectYoff) + (float)(768-(height))/2, 5*xres, height};
 				//SDL_SetRenderDrawColor(renderer, ((float)tamnt/(float)255)*255, 0, 0, 255);
 				//SDL_SetRenderDrawColor(renderer, fmin(dist(x, y, x+sin(fra)*tamnt, 255), y+cos(fra)*tamnt  ) , 0, 0, 255);
 				
@@ -664,7 +768,7 @@ bool tri = false;
 				//tamnt-=1;
 				//SDL_Rect rect = {i, 0, 1, 768-tamnt};
 				int height= fmax(dist-tamnt, 0);
-				SDL_Rect rect = {i*4.5-5, (rectYoff) + (float)(768-(height))/2, 5, height};
+				SDL_Rect rect = {xres*i*4.6-5, (rectYoff) + (float)(768-(height))/2, 5*xres, height};
 				SDL_SetRenderDrawColor(renderer, fmax(255*fmin(1-(float)tamnt/768, 255), 0), 0, 0, 255);
 				
 				//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -679,7 +783,7 @@ bool tri = false;
 		re[i] = (ray){x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt};
 		//SDL_RenderDrawLine(renderer, x, y, x + sin(fra)*tamnt, y + cos(fra)*tamnt);
 		#endif
-		fra+=0.01/(3);
+		fra+=0.01/(3)*xres;
 
 		}
         //SDL_RenderCopy(renderer, texture, NULL, NULL);
