@@ -650,39 +650,6 @@ bool tri = false;
 					// circol works but i am too lazy too put them somewhere (i need to put it in the builder)
 					for(;sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, c)*/;) {
 						tamnt--;
-SDL_Rect rL[3] = {
- {490,632,41,2},
-{374,587,384,51},
-{366,647,403,34},
-};
-
-int color[3][3] = {
- {255,46,75},
-{255,46,75},
-{255,46,75},
-};
-
-circle cL[4] = {
- {370,224,87},
-{763,223,81},
-{366,228,32},
-{742,230,31},
-};
-
-int ccolor[4][3] = {
- {255,206,231},
-{255,206,231},
-{0,0,0},
-{0,0,0},
-};
-
-triangle tL[1] = {
- { {410,495}, {604,221}, {740,485}, },
-};
-
-int tcolor[1][3] = {
- {255,74,101},
-};
 					}
 					break;
 					
@@ -730,9 +697,13 @@ int tcolor[1][3] = {
 				if(tamnt<1) {
 					x=lastX;
 					y=lastY;
+				/*	i--; // lets redo that bit (it will backtrack into the wall hehe)
+					fra-=0.01/(3)*xres;
+				*/
+					// jk that stuff froze it for some reason hehe
 				}
 				int height = fmax(dist-tamnt, 0);
-				SDL_Rect rect = {xres*i*4.6-5, (rectYoff) + (float)(768-(height))/2, 5*xres, height};
+				SDL_Rect rect = {xres*i*4.6 - 5, (rectYoff) + (float)(768-(height))/2, 5*xres, height};
 				//SDL_SetRenderDrawColor(renderer, ((float)tamnt/(float)255)*255, 0, 0, 255);
 				//SDL_SetRenderDrawColor(renderer, fmin(dist(x, y, x+sin(fra)*tamnt, 255), y+cos(fra)*tamnt  ) , 0, 0, 255);
 				
@@ -764,11 +735,15 @@ int tcolor[1][3] = {
 				if(tamnt<1) {
 					x=lastX;
 					y=lastY;
+				/*	i--; // lets redo that bit (it will backtrack into the wall hehe)
+					fra-=0.01/(3)*xres;
+				*/
+					// jk that stuff froze it for some reason hehe
 				}
 				//tamnt-=1;
 				//SDL_Rect rect = {i, 0, 1, 768-tamnt};
 				int height= fmax(dist-tamnt, 0);
-				SDL_Rect rect = {xres*i*4.6-5, (rectYoff) + (float)(768-(height))/2, 5*xres, height};
+				SDL_Rect rect = {xres*i*4.6 - 5, (rectYoff) + (float)(768-(height))/2, 5*xres, height};
 				SDL_SetRenderDrawColor(renderer, fmax(255*fmin(1-(float)tamnt/768, 255), 0), 0, 0, 255);
 				
 				//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
