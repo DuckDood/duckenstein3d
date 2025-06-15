@@ -27,6 +27,10 @@
 #define SH WIN_HEIGHT
 #define SW WIN_WIDTH
 
+#ifndef FRES
+#define FRES 1
+#endif
+
 
 
 
@@ -648,9 +652,12 @@ bool tri = false;
 					cIndex = i;
 					// steps back after collisions (nearly same result as increasing res, except corners are slightly rounded)
 					// circol works but i am too lazy too put them somewhere (i need to put it in the builder)
+					//
+					#if FRES
 					for(;sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i])/* || circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, c)*/;) {
 						tamnt--;
 					}
+					#endif
 					break;
 					
 				}
@@ -663,10 +670,12 @@ bool tri = false;
 					cIndex = i;
 					// steps back after collisions (nearly same result as increasing res, except corners are slightly rounded)
 					// circol works but i am too lazy too put them somewhere (i need to put it in the builder)
+					#if FRES
 					for(;/*sqrcol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, rL[i]) || */circol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, cL[i]);) {
 						tamnt--;
 
 					}
+					#endif
 					break;
 					
 				}
@@ -679,10 +688,12 @@ bool tri = false;
 					col = true;
 					tri = true;
 					cIndex = i;
+					#if FRES
 					for(;tricol(x+sin(fra)*tamnt, y+cos(fra)*tamnt, tL[i]);) {
 						tamnt--;
 	
 					}
+					#endif
 					break;
 					// colors no working because
 					// duh

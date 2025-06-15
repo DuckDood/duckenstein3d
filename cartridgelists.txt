@@ -14,11 +14,14 @@ var debug 0
 
 var bob 1
 
+var fres 1
+
 
 bopt res res
 bopt xres xres
 bopt debug debug
 bopt BOBAMNT bob
+bopt FRES fres
 
 checknext level.h
 include main.c
